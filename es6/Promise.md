@@ -1,3 +1,8 @@
+
+UPDATE     : 2016.12.05
+Translator : ByoengGiKim
+
+
 # Promise (동기 프로그래밍을 위한 Promise)
 
 
@@ -35,7 +40,7 @@ asyncFunc()
 ```
 
 
-## 2. Chaining `then()` calls( `then()`을 가지고 체이닝 호출하기 )
+### 1-1. Chaining `then()` calls( `then()`을 가지고 체이닝 호출하기 )
 
 `then()` always returns a Promise, which enables you to chain method calls:
   `then()`은 항상 메서드 체이닝 메서드 호출이 가능한, Promise를 리턴한다.
@@ -73,7 +78,7 @@ Furthermore, note how catch() handles the errors of two asynchronous function ca
 
 
 
-## 3. Executing asynchronous functions in parallel(병렬로 비동기 함수 실행하기)
+### 1-2. Executing asynchronous functions in parallel(병렬로 비동기 함수 실행하기)
 
 
 If you chain asynchronous function calls via then(), they are executed sequentially, one at a time:
@@ -109,7 +114,7 @@ Promise.all([
 });
 ```
 
-## 4. Glossary: Promises (용어: 프로미스)
+### 1-3. Glossary: Promises (용어: 프로미스)
 
 The Promise API is about delivering results asynchronously. A Promise object (short: Promise) is a stand-in for the result, which is delivered via that object.
 
@@ -134,7 +139,7 @@ Changing states: There are two operations for changing the state of a Promise. A
   * Resolving with a normal (non-thenable) value fulfills the Promise.
   * Resolving a Promise P with a thenable T means that P can’t be resolved anymore and will now follow T’s state, including its fulfillment or rejection value. The appropriate P reactions will get called once T settles (or are called immediately if T is already settled).
 
-## 5. Introduction: Promises
+## 2. Introduction: Promises
 
 Promises are a pattern that helps with one particular kind of asynchronous programming: a function (or method) that returns a single result asynchronously. One popular way of receiving such a result is via a callback (“callbacks as continuations”):
 
@@ -174,3 +179,228 @@ Compared to callbacks as continuations, Promises have the following advantages:
 * Error handling: As we shall see later, error handling is simpler with Promises, because, once again, there isn’t an inversion of control. Furthermore, both exceptions and asynchronous errors are managed the same way.
 * Cleaner signatures: With callbacks, the parameters of a function are mixed; some are input for the function, others are responsible for delivering its output. With Promises, function signatures become cleaner; all parameters are input.
 * Standardized: Prior to Promises, there were several incompatible ways of handling asynchronous results (Node.js callbacks, XMLHttpRequest, IndexedDB, etc.). With Promises, there is a clearly defined standard: ECMAScript 6. ES6 follows the standard Promises/A+ [1]. Since ES6, an increasing number of APIs is based on Promises.
+
+
+
+
+## 3. A first example
+
+Let’s look at a first example, to give you a taste of what working with Promises is like.
+
+With Node.js-style callbacks, reading a file asynchronously looks like this:
+
+```js
+fs.readFile('config.json',
+    function (error, text) {
+        if (error) {
+            console.error('Error while reading config file');
+        } else {
+            try {
+                const obj = JSON.parse(text);
+                console.log(JSON.stringify(obj, null, 4));
+            } catch (e) {
+                console.error('Invalid JSON in file');
+            }
+        }
+    });
+```
+
+With Promises, the same functionality is used like this:
+
+```js
+readFilePromisified('config.json')
+.then(function (text) { // (A)
+    const obj = JSON.parse(text);
+    console.log(JSON.stringify(obj, null, 4));
+})
+.catch(function (error) { // (B)
+    // File read error or JSON SyntaxError
+    console.error('An error occurred', error);
+});
+```
+
+There are still callbacks, but they are provided via methods that are invoked on the result (then() and catch()). The error callback in line B is convenient in two ways: First, it’s a single style of handling errors (versus if (error) and try-catch in the previous example). Second, you can handle the errors of both readFilePromisified() and the callback in line A from a single location.
+
+The code of readFilePromisified() is shown later.
+
+
+
+
+## 4. Three ways of understanding Promises
+
+Let’s look at three ways of understanding Promises.
+
+The following code contains a Promise-based function asyncFunc() and its invocation.
+
+```js
+function asyncFunc() {
+    return new Promise((resolve, reject) => { // (A)
+        setTimeout(() => resolve('DONE'), 100); // (B)
+    });
+}
+asyncFunc()
+.then(x => console.log('Result: '+x));
+
+// Output:
+// Result: DONE
+```
+asyncFunc() returns a Promise. Once the actual result 'DONE' of the asynchronous computation is ready, it is delivered via resolve() (line B), which is a parameter of the callback that starts in line A.
+
+So what is a Promise?
+
+  * Conceptually, invoking asyncFunc() is a blocking function call.
+  * A Promise is both a container for a value and an event emitter.
+
+
+
+### 4-1.Conceptually: calling a Promise-based function is blocking
+The following code invokes asyncFunc() from the async function main(). Async functions are a feature of ECMAScript 2017.
+
+```js
+async function main() {
+    const x = await asyncFunc(); // (A)
+    console.log('Result: '+x); // (B)
+
+    // Same as:
+    // asyncFunc()
+    // .then(x => console.log('Result: '+x));
+}
+main();
+```
+
+The body of main() expresses well what’s going on conceptually, how we usually think about asynchronous computations. Namely, asyncFunc() is a blocking function call:
+
+  * Line A: Wait until asyncFunc() is finished.
+  * Line B: Then log its result x.
+Prior to ECMAScript 6 and generators, you couldn’t suspend and resume code. That’s why, for Promises, you put everything that happens after the code is resumed into a callback. Invoking that callback is the same as resuming the code.
+
+
+
+### 4-2.A Promise is a container for an asynchronously delivered value
+
+If a function returns a Promise then that Promise is like a blank into which the function will (usually) fill in its result, once it has computed it. You can simulate a simple version of this process via an Array:
+
+```js
+function asyncFunc() {
+    const blank = [];
+    setTimeout(() => blank.push('DONE'), 100);
+    return blank;
+}
+const blank = asyncFunc();
+// Wait until the value has been filled in
+setTimeout(() => {
+    const x = blank[0]; // (A)
+    console.log('Result: '+x);
+}, 200);
+```
+
+With Promises, you don’t access the eventual value via [0] (as in line A), you use method then() and a callback.
+
+
+### 4-3.A Promise is an event emitter
+Another way to view a Promise is as an object that emits events.
+
+```js
+function asyncFunc() {
+    const eventEmitter = { success: [] };
+    setTimeout(() => { // (A)
+        for (const handler of eventEmitter.success) {
+            handler('DONE');
+        }
+    }, 100);
+    return eventEmitter;
+}
+asyncFunc()
+.success.push(x => console.log('Result: '+x)); // (B)
+```
+
+Registering the event listener (line B) can be done after calling asyncFunc(), because the callback handed to setTimeout() (line A) is executed asynchronously (after this piece of code is finished).
+
+Normal event emitters specialize in delivering multiple events, starting as soon as you register.
+
+In contrast, Promises specialize in delivering exactly one value and come with built-in protection against registering too late: the result of a Promise is cached and passed to event listeners that are registered after the Promise was settled.
+
+
+## 5.Creating and using Promises
+Let’s look at how Promises are operated from the producer and the consumer side.
+
+### 5-1.Producing a Promise
+As a producer, you create a Promise and send a result via it:
+
+```js
+const p = new Promise(
+    function (resolve, reject) { // (A)
+        ···
+        if (···) {
+            resolve(value); // success
+        } else {
+            reject(reason); // failure
+        }
+    });
+```
+
+
+
+
+
+
+
+
+
+### 5-2.The states of Promises
+
+Once a result was delivered via a Promise, the Promise stays locked in to that result. That means each Promise is always in either one of three (mutually exclusive) states:
+
+  * Pending: the result hasn’t been computed, yet (the initial state of each Promise)
+  * Fulfilled: the result was computed successfully
+  * Rejected: a failure occurred during computation
+
+A Promise is settled (the computation it represents has finished) if it is either fulfilled or rejected. A Promise can only be settled once and then stays settled. Subsequent attempts to settle have no effect.
+
+
+The parameter of new Promise() (starting in line A) is called an executor:
+
+  * Resolving: If the computation went well, the executor sends the result via resolve(). That usually fulfills the Promise p. But it may not – resolving with a Promise q leads to p tracking q: If q is still pending then so is p. However q is settled, p will be settled the same way.
+  * Rejecting: If an error happened, the executor notifies the Promise consumer via reject(). That always rejects the Promise.
+
+If an exception is thrown inside the executor, p is rejected with that exception.
+
+
+
+
+
+
+
+
+### 5-3.Consuming a Promise
+
+As a consumer of promise, you are notified of a fulfillment or a rejection via reactions – callbacks that you register with the methods then() and catch():
+
+```js
+promise
+.then(value => { /* fulfillment */ })
+.catch(error => { /* rejection */ });
+```
+What makes Promises so useful for asynchronous functions (with one-off results) is that once a Promise is settled, it doesn’t change anymore. Furthermore, there are never any race conditions, because it doesn’t matter whether you invoke then() or catch() before or after a Promise is settled:
+
+  * Reactions that are registered with a Promise before it is settled, are notified of the settlement once it happens.
+  * Reactions that are registered with a Promise after it is settled, receive the cached settled value “immediately” (their invocations are queued as tasks).
+Note that catch() is simply a more convenient (and recommended) alternative to calling then(). That is, the following two invocations are equivalent:
+```js
+promise.then(
+    null,
+    error => { /* rejection */ });
+
+promise.catch(
+    error => { /* rejection */ });
+```
+
+### 5-4 Promises are always asynchronous
+
+A Promise library has complete control over whether results are delivered to Promise reactions synchronously (right away) or asynchronously (after the current continuation, the current piece of code, is finished). However, the Promises/A+ specification demands that the latter mode of execution be always used. It states so via the following requirement (2.2.4) for the then() method:
+
+  onFulfilled or onRejected must not be called until the execution context stack contains only platform code.
+
+That means that your code can rely on run-to-completion semantics (as explained in the previous chapter) and that chaining Promises won’t starve other tasks of processing time.
+
+Additionally, this constraint prevents you from writing functions that sometimes return results immediately, sometimes asynchronously. This is an anti-pattern, because it makes code unpredictable. For more information, consult “Designing APIs for Asynchrony” by Isaac Z. Schlueter.
