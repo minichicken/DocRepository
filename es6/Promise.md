@@ -117,32 +117,37 @@ Promise.all([
 ### 1-3. Glossary: Promises (용어: 프로미스)
 
 The Promise API is about delivering results asynchronously. A Promise object (short: Promise) is a stand-in for the result, which is delivered via that object.
-
+Proamise API는 비동기적으로 결과를 보내는 것이다. Promise object(일명: promise)는 Promise 통해서 전달되는 결과의 대역이다.
 States:
 
-* A Promise is always in one of three mutually exclusive states:
-  * Before the result is ready, the Promise is pending.
-  * If a result is available, the Promise is fulfilled.
-  * If an error happened, the Promise is rejected.
-* A Promise is settled if “things are done” (if it is either fulfilled or rejected).
-* A Promise is settled exactly once and then remains unchanged.
+* A Promise is always in one of three mutually exclusive states: Promise는 항상 3가지 서로 배타적인 상태중에 있다.
+  * Before the result is ready, the Promise is pending. 결과가 완료되기전에 , promise는 대기하고 있다.
+  * If a result is available, the Promise is fulfilled. 만약 결과가 접근 가능하다면, promise는 실행되었다.
+  * If an error happened, the Promise is rejected. 만약 에러가 발생한다면, promise는 거부된다.
+* A Promise is settled if “things are done” (if it is either fulfilled or rejected). 만약에 완료된것이라면, promise는 변화가 없이 유지된다.
+* A Promise is settled exactly once and then remains unchanged. promise 가 정확하게 변화가 없이 유지되고 나면 나머지 변화하지 않는다.
 
-Reacting to state changes:
+Reacting to state changes(상태 변화에 반응하는 것):
 
-* Promise reactions are callbacks that you register with the Promise method then(), to be notified of a fulfillment or a rejection.
-* A thenable is an object that has a Promise-style then() method. Whenever the API is only interested in being notified of settlements, it only demands thenables (e.g. the values returned from then() and catch(); or the values handed to Promise.all() and Promise.race()).
+* Promise reactions are callbacks that you register with the Promise method `then()`, to be notified of a fulfillment or a rejection.
+  Promise 반응들은 Promise `then()` 메서드를 가지고 등록하여 호출된다, 처리나 거부를 알리기 위해서.
+* A thenable is an object that has a Promise-style `then()` method. Whenever the API is only interested in being notified of settlements, it only demands thenables (e.g. the values returned from `then()` and `catch()`; or the values handed to `Promise.all()` and `Promise.race()`).
+  thenable은 promise 스타링의  `then()` 메서드를 가진 object이다. 매번 API 가 안정에 대한 알림에 대한 통지에 되한것만 관심을 둘때마다, 이것은 오로지 thenable만 요구한다.(예를들면,`then()` 그리고 `catch()`을 가지고 리턴되는 값 또는  `Promise.all()` 그리고 `Promise.race()` 를 가지고 핸들링한 값들)
 
 Changing states: There are two operations for changing the state of a Promise. After you have invoked either one of them once, further invocations have no effect.
+상태를 변화하는것: promise 의 상태에 대한 2가지 규칙을 가진다. promise들중에 하나가 invoked 된후에, 더 많은 실행은 효과가 없다.
 
-* Rejecting a Promise means that the Promise becomes rejected.
-* Resolving a Promise has different effects, depending on what value you are resolving with:
-  * Resolving with a normal (non-thenable) value fulfills the Promise.
+* Rejecting a Promise means that the Promise becomes rejected. 프로미스가 거부되는것은 promise 거부가 됨을 의미한다.
+* Resolving a Promise has different effects, depending on what value you are resolving with: Promise 가 처리하는것은  어떤 처리하고 있는 값에 따라서 다른 효과를 가진다.
+  * Resolving with a normal (non-thenable) value fulfills the Promise.보통 값을 가지고 처리하는 것은 Promise 를 완료시킨다.
   * Resolving a Promise P with a thenable T means that P can’t be resolved anymore and will now follow T’s state, including its fulfillment or rejection value. The appropriate P reactions will get called once T settles (or are called immediately if T is already settled).
+    thenable T 가지고 Promise P를 처리하는것은 P는 더이상 처리할수 없고 지금 T의 완료 또는 거부 값을 포함한 상태를 따라갈것을 의미한다.
 
-## 2. Introduction: Promises
+## 2. Introduction: Promises (소개 :Promises)
 
 Promises are a pattern that helps with one particular kind of asynchronous programming: a function (or method) that returns a single result asynchronously. One popular way of receiving such a result is via a callback (“callbacks as continuations”):
 
+Promises는 특정 종류의 비동기 프로그래밍에 도움을 주는 패턴이다. 비동기적으로 하나의 결과를 리턴하는 함수( 또는 메서드). 결과 같은 것을 받는 일반적인 방법은 호출을 통한 것이다.(지속적인 콜백)
 
 ```js
 asyncFunction(arg1, arg2,
@@ -152,6 +157,7 @@ asyncFunction(arg1, arg2,
 ```
 
 Promises provide a better way of working with callbacks: Now an asynchronous function returns a Promise, an object that serves as a placeholder and container for the final result. Callbacks registered via the Promise method then() are notified of the result:
+Promise는 호출을 가지고 동적하는 가장 좋은 방법을 제공한다. 지금 비동기 함수는 마지막 결과에 대한 컨테이너와 위치에 대한 것을 것을 제공하는 Promise를 리턴한다.
 
 ```js
 asyncFunction(arg1, arg2)
@@ -160,8 +166,10 @@ asyncFunction(arg1, arg2)
 });
 ```
 Compared to callbacks as continuations, Promises have the following advantages:
+지속적인 콜백과 비교괴는, Promises는 다음 이점을 가진다.
 
-* No inversion of control: similarly to synchronous code, Promise-based functions return results, they don’t (directly) continue – and control – execution via callbacks. That is, the caller stays in control.
+* No inversion of control: similarly to synchronous code, Promise-based functions return results, they don’t (directly) continue – and control – execution via callbacks. That is, the caller stays in control, Promise 근간의 값을 리턴한다.
+비제어의 역전 : 간단한 동기적 코드 ,
 * Chaining is simpler: If the callback of then() returns a Promise (e.g. the result of calling another Promise-based function) then then() returns that Promise (how this really works is more complicated and explained later). As a consequence, you can chain then() method calls:
 
 ```js
