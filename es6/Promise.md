@@ -168,9 +168,13 @@ asyncFunction(arg1, arg2)
 Compared to callbacks as continuations, Promises have the following advantages:
 지속적인 콜백과 비교괴는, Promises는 다음 이점을 가진다.
 
-* No inversion of control: similarly to synchronous code, Promise-based functions return results, they don’t (directly) continue – and control – execution via callbacks. That is, the caller stays in control, Promise 근간의 값을 리턴한다.
-비제어의 역전 : 간단한 동기적 코드 ,
-* Chaining is simpler: If the callback of then() returns a Promise (e.g. the result of calling another Promise-based function) then then() returns that Promise (how this really works is more complicated and explained later). As a consequence, you can chain then() method calls:
+* No inversion of control: similarly to synchronous code, Promise-based functions return results, they don’t (directly) continue – and control – execution via callbacks. That is, the caller stays in control.
+
+비제어의 역전 : 동기적인 코드들과 유사하게고, Promise를 기본으로 하는 함수들은 값을 리턴한다, 그것들은 직접적으로 지속 - 제어 - 실행을 콜백을 가지고 하지않는다.
+
+* Chaining is simpler: If the callback of `then()` returns a Promise (e.g. the result of calling another Promise-based function) then `then()` returns that Promise (how this really works is more complicated and explained later). As a consequence, you can chain then() method calls:
+
+체이닝의 단순함 : 만약 `then()`의 콜백이 프로미스(예를들면, 다른 프로미스 베이스 함수들 호출한 결과)를 리턴한다면 , `then()`은 그 프로미스를 리턴한다.(어떻게 이것이 사실상 더 복잡하게 동작하는지는 후에 설명한다.) . 결과적으로 당신은 제이닝 `then()` 메서드를 호출할수 있다.
 
 ```js
   asyncFunction1(a, b)
@@ -184,10 +188,15 @@ Compared to callbacks as continuations, Promises have the following advantages:
 ```
 
 * Composing asynchronous calls (loops, mapping, etc.): is a little easier, because you have data (Promise objects) you can work with.
-* Error handling: As we shall see later, error handling is simpler with Promises, because, once again, there isn’t an inversion of control. Furthermore, both exceptions and asynchronous errors are managed the same way.
-* Cleaner signatures: With callbacks, the parameters of a function are mixed; some are input for the function, others are responsible for delivering its output. With Promises, function signatures become cleaner; all parameters are input.
-* Standardized: Prior to Promises, there were several incompatible ways of handling asynchronous results (Node.js callbacks, XMLHttpRequest, IndexedDB, etc.). With Promises, there is a clearly defined standard: ECMAScript 6. ES6 follows the standard Promises/A+ [1]. Since ES6, an increasing number of APIs is based on Promises.
+  비동기적인 호출들을 조합하는것(루프,매핑 등.): 이것은 아주 쉽다, 왜냐하면 동작 가능한 프로미스 오브젝트를 데이터로 가지기 때문이다.
 
+* Error handling: As we shall see later, error handling is simpler with Promises, because, once again, there isn’t an inversion of control. Furthermore, both exceptions and asynchronous errors are managed the same way.
+  에러 핸들링 : 만약 당신이 후에 보게 되다면, 에러 핸들링은 프로미스를 가지고 쉽다, 왜냐하며냐 , 한번 다시 , 제어에 역전이 없기 때문이다. 더군다나 , 각각 예외들과 비동기적인 에러들은 같은 방법으로 관리할수 있다.
+* Cleaner signatures: With callbacks, the parameters of a function are mixed; some are input for the function, others are responsible for delivering its output. With Promises, function signatures become cleaner; all parameters are input.
+ 깔끔한 시그니처 : 콜백된 함수의 파라미터들은 섞인다; 어떤 것들은 함수에 입력되고 , 다른 것들은 이것의 출력 전달을 위한 역할을 한다. 프로미스를 가진 함수의 시그니처들은 매우 클린하다.
+
+* Standardized: Prior to Promises, there were several incompatible ways of handling asynchronous results (Node.js callbacks, XMLHttpRequest, IndexedDB, etc.). With Promises, there is a clearly defined standard: ECMAScript 6. ES6 follows the standard Promises/A+ [1]. Since ES6, an increasing number of APIs is based on Promises.
+ 표준화 : 프로미스 이전에는, 비동기적인 결과들을 다루는 양립할수 없는 것들이 있었다.((Node.js callbacks, XMLHttpRequest, IndexedDB, etc.). 프로미스를 가진다면, 아주 깔끔하고 정돈된 표준화가 있다: EMCA 6. ES6는 Promises/A+ 를 따른다.  ES6 이후로는 ,  증가하는 API 숫자는 프로미스를 기본으로 한다.
 
 
 
