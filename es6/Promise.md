@@ -40,7 +40,7 @@ asyncFunc()
 ```
 
 
-### 1-1. Chaining `then()` calls( `then()`을 가지고 체이닝 호출하기 )
+### 1-1. Chaining `then()` calls(`then()`을 가지고 체이닝 호출하기 )
 
 `then()` always returns a Promise, which enables you to chain method calls:
   `then()`은 항상 메서드 체이닝 메서드 호출이 가능한, Promise를 리턴한다.
