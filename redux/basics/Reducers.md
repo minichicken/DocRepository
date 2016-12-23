@@ -1,13 +1,16 @@
 # Reducers
 
 [Actions](./Actions.md) describe the fact that *something happened*, but don't specify how the application's state changes in response. This is the job of reducers.
-액션들은 이벤트가 발생한 사실을 표현한 것이고,  어떻게 어플케이션의 상태가 응답에 대해서 변해야 하는지 규정하지는 않는다. 이것은 reducers의 일이다.
+[액션](./Actions.md)들은 이벤트가 발생한 사실을 표현한 것이고, 어떻게 어플케이션의 상태가 응답에 대해서 변해야 하는지 규정하지는 않는다. 이것은 reducers의 일이다.
+
 ## Designing the State Shape(상태의 형태를 설계하기)
 
 In Redux, all the application state is stored as a single object. It's a good idea to think of its shape before writing any code. What's the minimal representation of your app's state as an object?
 
+Redux에서는, 모든 어플리케이션의 상태는 하나의 객체로써 저장되어진다.
+어떤 코드로 작성했던 간에 이것은 매우 좋은 생각이다.
+객체로써 당신의 어플리케이션 상태에 최소한의 표현은 무엇인가?
 
-Redux에서는, 모든 어플리케이션의 상태는 하나의 객체로써 저장되어진다. 어떤 코드로 작성했던 간에 이것은 매우 좋은 생각이다. 객체로써 당신의 앱에 대한 최소한의 표현은 무엇인가?
 
 For our todo app, we want to store two different things:
 우리의 todo 앱에서는, 우리는 2가지 다른 것을 저장하길 원한다:
@@ -43,7 +46,7 @@ You'll often find that you need to store some data, as well as some UI state, in
 
 Now that we've decided what our state object looks like, we're ready to write a reducer for it. The reducer is a pure function that takes the previous state and an action, and returns the next state.
 
-지금 우리는 어떤 우리의 상태 객체를 보여줄지 결정하는 것을 할것이다, 우리는 어떻게 객체상태를 표현할지를 결정하기 위해서 reducer를 쓰는것을 준비할 것이다. reducer는 이전 상태와 액션 그리고 다음 상태를 가진 순수한 함수이다. 
+지금 우리는 어떤 우리의 상태 객체를 보여줄지 결정하는 것을 할것이다, 우리는 어떻게 객체상태를 표현할지를 결정하기 위해서 reducer를 쓰는것을 준비할 것이다. reducer는 이전 상태와 액션 그리고 다음 상태를 가진 순수한 함수이다.
 
 
 ```js
