@@ -19,7 +19,8 @@ For our todo app, we want to store two different things:
 * The actual list of todos. todo들의 실제 리스트
 
 You'll often find that you need to store some data, as well as some UI state, in the state tree. This is fine, but try to keep the data separate from the UI state.
-우리는 종종 어떤 데이를 저장해야하는것을 상태 트리에서, 어떤 UI의 상태 까지도 저장해야 함을 발견할수 있다. 이것은 좋은 방법이지만, UI 상태와 분리된 데이터를 유지하려고 한다.
+우리는 종종 어떤 데이를 저장해야하는것을 상태 트리에서, 어떤 UI의 상태 까지도 저장해야 함을 발견할수 있다.
+이것은 좋은 방법이지만, UI 상태와 분리된 데이터를 유지하려고 한다.
 
 ```js
 {
@@ -46,14 +47,18 @@ You'll often find that you need to store some data, as well as some UI state, in
 
 Now that we've decided what our state object looks like, we're ready to write a reducer for it. The reducer is a pure function that takes the previous state and an action, and returns the next state.
 
-지금 우리는 어떤 우리의 상태 객체를 보여줄지 결정하는 것을 할것이다, 우리는 어떻게 객체상태를 표현할지를 결정하기 위해서 reducer를 쓰는것을 준비할 것이다. reducer는 이전 상태와 액션 그리고 다음 상태를 가진 순수한 함수이다.
+지금 우리는 어떤 우리의 상태 객체를 보여줄지 결정하는 것을 할것이다, 우리는 어떻게 객체상태를 표현할지를 결정하기 위해서 reducer를 쓰는것을 준비할 것이다.
+reducer는 이전 상태와 액션 전달하고 그리고 다음 상태를 반환하는 순수한 함수이다.
 
 
 ```js
+
 (previousState, action) => newState
+
 ```
 
-It's called a reducer because it's the type of function you would pass to [`Array.prototype.reduce(reducer, ?initialValue)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce). It's very important that the reducer stays pure. Things you should **never** do inside a reducer:
+It's called a reducer because it's the type of function you would pass to [`Array.prototype.reduce(reducer, ?initialValue)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce).
+It's very important that the reducer stays pure. Things you should **never** do inside a reducer:
 
 * Mutate its arguments;
 * Perform side effects like API calls and routing transitions;
